@@ -3,120 +3,475 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Киллер: Игра</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>
+    <title>Оперативный Центр</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter for modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* Custom CSS for professional look */
         body {
-            font-family: 'Orbitron', sans-serif;
-            background: linear-gradient(135deg, #1a1a1a, #2c2c2c);
-            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            background-color: #0d0d0d; /* Very dark background */
+            color: #e0e0e0; /* Soft white text */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
             overflow-x: hidden;
-            touch-action: manipulation;
+            background-image: radial-gradient(circle at center, #1a0a0a 0%, #0d0d0d 70%); /* Subtle gradient */
         }
-        .neon {
-            box-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc, 0 0 30px #00ffcc;
+        .container {
+            width: 100%;
+            max-width: 480px; /* Slightly wider for better content display */
+            margin: 0 auto;
+            padding: 1.5rem;
+            box-sizing: border-box;
         }
-        .pulse {
-            animation: pulse 2s infinite;
+        .card {
+            background-color: #1c1c1c; /* Dark gray for cards */
+            border: 1px solid #333; /* Subtle border */
+            border-radius: 16px; /* More rounded corners */
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6); /* Deeper shadow */
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.4s ease-in-out;
+            backdrop-filter: blur(5px); /* Slight blur for modern feel */
+            background-clip: padding-box;
+            border-color: rgba(255, 0, 0, 0.3); /* Red tint on border */
         }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .input-field {
+            background-color: #2a2a2a; /* Darker input background */
+            border: 1px solid #444;
+            color: #e0e0e0;
+            border-radius: 10px; /* More rounded */
+            padding: 0.85rem 1.2rem;
+            width: 100%;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            font-size: 1rem;
+        }
+        .input-field:focus {
+            border-color: #ff3333; /* Brighter red on focus */
+            box-shadow: 0 0 0 3px rgba(255, 51, 51, 0.3); /* Red glow */
+        }
+        .btn {
+            background: linear-gradient(145deg, #ff3333, #cc0000); /* Gradient red button */
+            color: white;
+            padding: 0.85rem 1.75rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            box-shadow: 0 4px 12px rgba(255, 0, 0, 0.4); /* Red shadow */
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .btn:hover {
+            background: linear-gradient(145deg, #cc0000, #ff3333); /* Reverse gradient on hover */
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(255, 0, 0, 0.6);
+        }
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
         }
         .fade-in {
-            animation: fadeIn 1s ease-in;
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        .fade-out {
+            animation: fadeOut 0.6s ease-out forwards;
         }
         @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .map-img {
-            max-width: 100%;
-            border: 2px solid #00ffcc;
-            border-radius: 8px;
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(20px); display: none; }
+        }
+        .hidden-element {
+            display: none;
+        }
+        .map-image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            border: 1px solid #444;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); /* Darker overlay */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #1c1c1c;
+            border: 1px solid #ff3333; /* Red border */
+            border-radius: 16px;
+            padding: 2.5rem;
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            transform: translateY(-30px);
+            transition: transform 0.4s ease;
+            backdrop-filter: blur(8px);
+        }
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+        .modal-button {
+            background: linear-gradient(145deg, #ff3333, #cc0000);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 2rem;
+            border: none;
+            text-transform: uppercase;
+        }
+        .modal-button:hover {
+            background: linear-gradient(145deg, #cc0000, #ff3333);
+            transform: translateY(-2px);
+        }
+        .modal-button:active {
+            transform: translateY(0);
         }
     </style>
 </head>
-<body x-data="app()">
-    <!-- Экран логина -->
-    <div x-show="!isLoggedIn" class="min-h-screen flex items-center justify-center">
-        <div class="bg-gray-900 p-6 rounded-lg neon w-11/12 max-w-md">
-            <h1 class="text-2xl text-center text-[#00ffcc] mb-4">🔒 Вход в игру</h1>
-            <input x-model="username" type="text" placeholder="Логин" class="w-full p-2 mb-4 bg-gray-800 rounded text-white">
-            <input x-model="password" type="password" placeholder="Пароль" class="w-full p-2 mb-4 bg-gray-800 rounded text-white">
-            <button @click="login()" class="w-full p-3 bg-[#00ffcc] text-black rounded pulse">Войти</button>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div id="login-screen" class="card text-center fade-in">
+            <h2 class="text-3xl font-extrabold mb-8 text-red-500">
+                <i class="fas fa-fingerprint mr-3"></i> ДОСТУП ЗАПРЕЩЕН
+            </h2>
+            <div class="mb-5">
+                <input type="text" id="username" placeholder="ЛОГИН" class="input-field text-center">
+            </div>
+            <div class="mb-8">
+                <input type="password" id="password" placeholder="ПАРОЛЬ" class="input-field text-center">
+            </div>
+            <button id="login-btn" class="btn w-full">
+                <i class="fas fa-lock-open"></i> АВТОРИЗАЦИЯ
+            </button>
+            <p id="login-error" class="text-red-400 mt-6 hidden text-sm font-medium">
+                <i class="fas fa-exclamation-triangle mr-2"></i> Неверные учетные данные. Повторите попытку.
+            </p>
+        </div>
+
+        <!-- Main Interface -->
+        <div id="main-interface" class="hidden-element">
+            <div class="card fade-in">
+                <h1 class="text-3xl font-extrabold mb-4 text-red-500 text-center">
+                    <i class="fas fa-skull-crossbones mr-2"></i> ОПЕРАТИВНЫЙ ЦЕНТР
+                </h1>
+                <p class="text-center text-sm mb-8 text-red-300 font-light">
+                    Добро пожаловать, <span class="font-medium">Доминик Шушкевич</span>. 🕵️‍♂️
+                </p>
+
+                <!-- Target Information -->
+                <div id="target-info-section" class="mb-8 p-4 bg-gray-800 rounded-lg border border-red-700/30">
+                    <h2 class="text-xl font-semibold mb-4 text-red-400 flex items-center gap-3">
+                        <i class="fas fa-crosshairs text-red-500"></i> ЦЕЛЬ: КАТРИНА
+                    </h2>
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                        <img src="https://i.postimg.cc/zfGyD8Wv/Katrina.jpg" alt="Фото Катрины" class="w-28 h-28 rounded-full object-cover border-3 border-red-500 shadow-xl">
+                        <div class="text-center sm:text-left">
+                            <p class="text-lg font-medium mb-1">Имя: <span class="text-red-200 font-semibold">Катрина</span></p>
+                            <p class="text-lg font-medium mb-1">Срок: <span class="text-red-200 font-semibold">3 года</span></p>
+                            <p class="text-lg font-medium">Назначение: <span id="assignment-text" class="text-red-200 font-semibold italic">Загрузка задания...</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Geolocation Section -->
+                <div id="geolocation-section" class="mb-8 p-4 bg-gray-800 rounded-lg border border-red-700/30">
+                    <h2 class="text-xl font-semibold mb-4 text-red-400 flex items-center gap-3">
+                        <i class="fas fa-map-marker-alt text-red-500"></i> МЕСТОПОЛОЖЕНИЕ ЦЕЛИ
+                    </h2>
+                    <p class="text-red-200 mb-4 font-light">
+                        <i class="fas fa-location-arrow mr-2 text-red-400"></i> Pušų g. 2, Cirkliškis, 18122 Švenčionių r. sav.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <img src="https://i.postimg.cc/HkYYbmzg/Screenshot-20250630-194847-Maps.jpg" alt="Фото локации 1" class="map-image">
+                        <img src="https://i.postimg.cc/BQcZ8bxp/Screenshot-20250630-195002-Maps.jpg" alt="Фото локации 2" class="map-image">
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col gap-4">
+                    <button id="new-assignment-btn" class="btn">
+                        <i class="fas fa-redo-alt"></i> НОВОЕ ЗАДАНИЕ
+                    </button>
+                    <button id="toggle-geolocation-btn" class="btn">
+                        <i class="fas fa-map-marked-alt"></i> СКРЫТЬ/ПОКАЗАТЬ ГЕОЛОКАЦИЮ
+                    </button>
+                    <button id="toggle-target-info-btn" class="btn">
+                        <i class="fas fa-user-secret"></i> СКРЫТЬ/ПОКАЗАТЬ ИНФОРМАЦИЮ О ЦЕЛИ
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Главный экран -->
-    <div x-show="isLoggedIn" class="min-h-screen p-4">
-        <h1 class="text-3xl text-center text-[#00ffcc] mb-6">🎯 Цель: Катрина</h1>
-        
-        <!-- Профиль цели -->
-        <div class="bg-gray-900 p-4 rounded-lg neon mb-6 fade-in">
-            <img src="https://i.postimg.cc/zfGyD8Wv/Katrina.jpg" alt="Катрина" class="w-full rounded-lg mb-4">
-            <p class="text-lg">📛 Имя: Катрина</p>
-            <p class="text-lg">⏳ Срок: 3 года</p>
-            <p class="text-lg">📍 Локация: Pušų g. 2, Cirkliškis, 18122 Švenčionių r Rolex Day-Date 36. sav.</p>
-        </div>
-
-        <!-- Карта -->
-        <div class="bg-gray-900 p-4 rounded-lg neon mb-6 fade-in">
-            <h2 class="text-xl text-[#00ffcc] mb-4">🗺 Геолокация</h2>
-            <img src="https://i.postimg.cc/HkYYbmzg/Screenshot-20250630-194847-Maps.jpg" alt="Карта 1" class="map-img mb-4">
-            <img src="https://i.postimg.cc/BQcZ8bxp/Screenshot-20250630-195002-Maps.jpg" alt="
-
-Карта 2" class="map-img">
-        </div>
-
-        <!-- Задание -->
-        <div class="bg-gray-900 p-4 rounded-lg neon mb-6 fade-in">
-            <h2 class="text-xl text-[#00ffcc] mb-4">🎮 Текущее задание</h2>
-            <p x-text="currentTask" class="text-lg"></p>
-            <button @click="generateTask()" class="w-full p-3 bg-[#00ffcc] text-black rounded pulse mt-4">🔄 Новое задание</button>
+    <!-- Custom Modal for Messages -->
+    <div id="custom-modal" class="modal">
+        <div class="modal-content">
+            <p id="modal-message" class="text-lg text-red-200 mb-4 font-medium"></p>
+            <button id="modal-close-btn" class="modal-button">ПОНЯТНО</button>
         </div>
     </div>
 
     <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('app', () => ({
-                isLoggedIn: false,
-                username: '',
-                password: '',
-                currentTask: 'Нажми, чтобы получить задание! 🎲',
-                tasks: [
-                    'Следи за Катриной 2 часа, не попадайся ей на глаза! 🕵️‍♂️',
-                    'Собери информацию о маршруте Катрины до работы. 📋',
-                    'Сфотографируй Катрину незаметно на улице. 📸',
-                    'Избегай Катрины в радиусе 500 метров. 🏃‍♂️',
-                    'Узнай, где Катрина будет завтра в 18:00. 🕒',
-                    'Подготовь план "устранения" Катрины (игровое). 🔪',
-                    'Спрячься от Катрины в указанной локации. 🙈',
-                    // ... добавлено 94 дополнительных задания для достижения 100
-                    'Следи за Катриной через социальные сети. 📱',
-                    'Запиши, с кем Катрина встречается сегодня. 👥',
-                    'Проверь, была ли Катрина в указанной локации. 📍',
-                    // и т.д. (для примера сокращено)
-                ],
+        // DOM Elements
+        const loginScreen = document.getElementById('login-screen');
+        const mainInterface = document.getElementById('main-interface');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('login-btn');
+        const loginError = document.getElementById('login-error');
+        const assignmentText = document.getElementById('assignment-text');
+        const newAssignmentBtn = document.getElementById('new-assignment-btn');
+        const geolocationSection = document.getElementById('geolocation-section');
+        const toggleGeolocationBtn = document.getElementById('toggle-geolocation-btn');
+        const targetInfoSection = document.getElementById('target-info-section');
+        const toggleTargetInfoBtn = document.getElementById('toggle-target-info-btn');
+        const customModal = document.getElementById('custom-modal');
+        const modalMessage = document.getElementById('modal-message');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
 
-                login() {
-                    if (this.username === 'Dominik Šuškevič' && this.password === 'AES-286') {
-                        this.isLoggedIn = true;
-                        this.generateTask();
-                    } else {
-                        alert('Неверный логин или пароль! 🚫');
-                    }
-                },
+        // Login Credentials
+        const CORRECT_USERNAME = 'Dominik Šuškevič';
+        const CORRECT_PASSWORD = 'AES-286';
 
-                generateTask() {
-                    const randomIndex = Math.floor(Math.random() * this.tasks.length);
-                    this.currentTask = this.tasks[randomIndex];
-                }
-            }));
+        // Random Assignments (100 options)
+        const assignments = [
+            "Следить за Катриной и документировать ее передвижения. 🚶‍♀️",
+            "Узнать ее ежедневный распорядок дня. 🗓️",
+            "Собрать информацию о ее контактах. 📞",
+            "Избегать обнаружения Катриной в течение 24 часов. 👻",
+            "Ликвидировать цель: Катрина. 💀",
+            "Установить скрытое наблюдение за ее домом. 🏠",
+            "Перехватить ее коммуникации. 📡",
+            "Скрыться от преследования Катрины. 🏃‍♀️",
+            "Подготовить план эвакуации после завершения миссии. 🚁",
+            "Изучить ее слабые стороны. 🧠",
+            "Обеспечить ее безопасность от третьих лиц. 🛡️",
+            "Подготовиться к внезапному столкновению. 💥",
+            "Спровоцировать ее на определенные действия. 🎭",
+            "Замаскироваться и внедриться в ее окружение. 🎭",
+            "Найти способ нейтрализовать ее охрану. 🔫",
+            "Создать ложную информацию для отвлечения. 📰",
+            "Оценить ее психологическое состояние. 🧐",
+            "Завербовать информатора из ее круга. 🤝",
+            "Устранить свидетелей. 🤫",
+            "Инсценировать несчастный случай. 🚑",
+            "Заложить жучок в ее транспортное средство. 🚗",
+            "Следовать за ней незамеченным в течение недели. 🕵️‍♂️",
+            "Найти ее секретное убежище. 🗺️",
+            "Взломать ее личные устройства. 💻",
+            "Оставить ложные следы. 🐾",
+            "Установить контакт с ее ближайшими родственниками. 👨‍👩‍👧‍👦",
+            "Изучить ее привычки в социальных сетях. 📱",
+            "Обеспечить алиби на время операции. 📝",
+            "Нейтрализовать ее средства связи. 📵",
+            "Похитить ценные данные. 💾",
+            "Спровоцировать конфликт между ней и ее союзниками. ⚔️",
+            "Завершить миссию без следов. 💨",
+            "Обеспечить отвлекающий маневр. 🎇",
+            "Заставить ее раскрыть информацию. 🗣️",
+            "Уничтожить компрометирующие материалы. 🗑️",
+            "Подменить важные документы. 📄",
+            "Задержать ее без лишнего шума. 🤐",
+            "Имитировать ее исчезновение. 🌫️",
+            "Создать легенду для проникновения. 📜",
+            "Обезвредить ее личную охрану. 🥋",
+            "Заманить ее в ловушку. 🕸️",
+            "Изменить ее маршрут передвижения. 🛣️",
+            "Скомпрометировать ее репутацию. 📉",
+            "Организовать побег из-под наблюдения. 🚀",
+            "Захватить ее ценности. 💰",
+            "Передать ложные сведения. 📧",
+            "Установить скрытые камеры. 📸",
+            "Завербовать ее водителя/помощника. 🚗",
+            "Найти ее финансовые активы. 🏦",
+            "Устроить саботаж. 💣",
+            "Подделать ее подпись. ✍️",
+            "Заблокировать ее доступ к ресурсам. 🔒",
+            "Собрать образцы ДНК. 🧬",
+            "Отравить ее еду/напитки. ☠️",
+            "Использовать ее слабости против нее. 💔",
+            "Завербовать ее близкого друга. 🫂",
+            "Найти ее тайные встречи. 🤫",
+            "Установить прослушку на ее телефон. 👂",
+            "Уничтожить ее транспортное средство. 💥",
+            "Захватить ее питомца. 🐾",
+            "Использовать ее страхи. 😱",
+            "Создать панику в ее окружении. 😨",
+            "Заставить ее покинуть страну. ✈️",
+            "Организовать несчастный случай с ее имуществом. 🚧",
+            "Завербовать ее адвоката. ⚖️",
+            "Найти ее скрытые доходы.  скрытые доходы. 💸",
+            "Устранить ее конкурентов. 🔪",
+            "Использовать ее семью для давления. 👨‍👩‍👧‍👦",
+            "Заманить ее в безлюдное место. 🌲",
+            "Установить слежку за ее детьми. 👶",
+            "Подорвать ее доверие к окружению. 💔",
+            "Заставить ее признаться. 🎤",
+            "Стереть все следы своего присутствия. 🧽",
+            "Обеспечить себе чистое прошлое. ✨",
+            "Завершить миссию тихо и незаметно. 🤫",
+            "Использовать ее увлечения для сближения. 🎨",
+            "Найти ее уязвимые места в сети. 🌐",
+            "Устроить ложное нападение. 👊",
+            "Заставить ее совершить ошибку. ❌",
+            "Похитить ее личные данные. 🪪",
+            "Завербовать ее телохранителя. 🛡️",
+            "Найти ее тайные связи. 🔗",
+            "Устроить пожар. 🔥",
+            "Подделать ее голос. 🗣️",
+            "Заблокировать ее банковские счета. 💳",
+            "Собрать компромат на нее. 📸",
+            "Отравить ее через воздух. 💨",
+            "Использовать ее домашних животных. 🐶",
+            "Создать хаос вокруг нее. 🌪️",
+            "Заставить ее бежать. 🏃‍♀️",
+            "Организовать ложное задержание. 👮‍♂️",
+            "Завербовать ее секретаря. 👩‍💻",
+            "Найти ее тайные убежища. ⛺",
+            "Устроить взрыв. 💣",
+            "Подделать ее документы. 📄",
+            "Заблокировать ее выход из здания. ⛔",
+            "Собрать ее биометрические данные. 🖐️",
+            "Отравить ее через прикосновение. 🧤",
+            "Использовать ее детей для давления. 👶",
+            "Создать атмосферу паранойи. 😵‍💫",
+            "Заставить ее сдаться. 🏳️",
+            "Организовать несчастный случай с ее близкими. 💔",
+            "Завербовать ее доктора. 🩺",
+            "Найти ее тайные операции. 🤫",
+            "Устроить массовую панику. 😱",
+            "Подделать ее медицинские записи. 📋",
+            "Заблокировать ее доступ к информации. 🚫",
+            "Собрать ее психологический профиль. 🧠",
+            "Отравить ее через воду. 💧",
+            "Использовать ее хобби для проникновения. 🧩",
+            "Создать ложное преследование. 🚔",
+            "Заставить ее исчезнуть без следа. 👻",
+            "Организовать ее похищение. 🔗"
+        ];
+
+        // Function to show custom modal
+        function showModal(message) {
+            modalMessage.textContent = message;
+            customModal.classList.add('show');
+        }
+
+        // Function to hide custom modal
+        function hideModal() {
+            customModal.classList.remove('show');
+        }
+
+        // Event listener for modal close button
+        modalCloseBtn.addEventListener('click', hideModal);
+
+        // Function to generate a random assignment
+        function generateRandomAssignment() {
+            const randomIndex = Math.floor(Math.random() * assignments.length);
+            assignmentText.textContent = assignments[randomIndex];
+        }
+
+        // Login button click handler
+        loginBtn.addEventListener('click', () => {
+            const enteredUsername = usernameInput.value.trim();
+            const enteredPassword = passwordInput.value.trim();
+
+            if (enteredUsername === CORRECT_USERNAME && enteredPassword === CORRECT_PASSWORD) {
+                loginScreen.classList.remove('fade-in');
+                loginScreen.classList.add('fade-out');
+                // Wait for fade-out animation to complete before hiding
+                setTimeout(() => {
+                    loginScreen.classList.add('hidden-element');
+                    mainInterface.classList.remove('hidden-element');
+                    mainInterface.classList.add('fade-in');
+                    generateRandomAssignment(); // Generate initial assignment
+                }, 600); // Match fade-out duration
+            } else {
+                loginError.classList.remove('hidden');
+                // Optional: Clear password field on error
+                passwordInput.value = '';
+                setTimeout(() => {
+                    loginError.classList.add('hidden');
+                }, 3000); // Hide error after 3 seconds
+            }
+        });
+
+        // New Assignment button click handler
+        newAssignmentBtn.addEventListener('click', generateRandomAssignment);
+
+        // Toggle Geolocation section visibility
+        toggleGeolocationBtn.addEventListener('click', () => {
+            if (geolocationSection.classList.contains('hidden-element')) {
+                geolocationSection.classList.remove('hidden-element');
+                geolocationSection.classList.add('fade-in');
+                geolocationSection.classList.remove('fade-out');
+            } else {
+                geolocationSection.classList.remove('fade-in');
+                geolocationSection.classList.add('fade-out');
+                setTimeout(() => {
+                    geolocationSection.classList.add('hidden-element');
+                }, 600); // Match fade-out duration
+            }
+        });
+
+        // Toggle Target Info section visibility
+        toggleTargetInfoBtn.addEventListener('click', () => {
+            if (targetInfoSection.classList.contains('hidden-element')) {
+                targetInfoSection.classList.remove('hidden-element');
+                targetInfoSection.classList.add('fade-in');
+                targetInfoSection.classList.remove('fade-out');
+            } else {
+                targetInfoSection.classList.remove('fade-in');
+                targetInfoSection.classList.add('fade-out');
+                setTimeout(() => {
+                    targetInfoSection.classList.add('hidden-element');
+                }, 600); // Match fade-out duration
+            }
+        });
+
+        // Initial setup for the login screen
+        document.addEventListener('DOMContentLoaded', () => {
+            usernameInput.focus(); // Focus on username input on load
         });
     </script>
 </body>
 </html>
+
